@@ -37,6 +37,7 @@ def afinar(v0,f, r, iteraciones, cuantil):
     error=np.zeros(iteraciones)
     aux=np.zeros((v0.size,iteraciones))
     v0.sort()
+    v0ini=v0
     for i in range(v0.size):
         v0[i],aux[i]=fError(v0[i],f,iteraciones, r,aux[i])
     for i in range(iteraciones):
@@ -47,7 +48,7 @@ def afinar(v0,f, r, iteraciones, cuantil):
             aux[j][iteraciones-1-i]=np.abs(aux[j][iteraciones-1-i]-aux[j][iteraciones-2-i])
             
     for j in range(v0.size):
-            aux[j][0]=np.abs(aux[j][0]-v0[j])
+            aux[j][0]=np.abs(aux[j][0]-v0ini[j])
      
     for i in range(iteraciones):
         error[i]=max(aux[:,i])        
