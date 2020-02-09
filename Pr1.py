@@ -24,23 +24,36 @@ def fn(x0, f, n, r):
         x=f(x, r)
     return x
 
-def fnError(x0, f, n, r, errorMax, periodo):
-    ant = x0
+def fError(x0, f, n, r, aux):
     x=x0
     for j in range(n):
-        x=fn(x, f, periodo, r)
-        errorMax[j]=max(errorMax[j],x-ant)
-        ant = x
-    return x,errorMax
+        x=f(x, r)
+        aux[j]=x
+    return x,aux
  
-def afinar(v0,f, r, periodo):
-    error=0
-    aux=np.zeros(100)
+    
+#Esta funcion afina V0 y calcula su error realizando las diferencias entre sucesivas iteraciones    
+def afinar(v0,f, r, iteraciones, cuantil):
+    error=np.zeros(iteraciones)
+    aux=np.zeros((v0.size,iteraciones))
+    v0.sort()
     for i in range(v0.size):
-        v0[i],aux=fnError(v0[i],f,100, r,aux, periodo)
-    aux.sort()
-    error = aux[94]
-    return v0,error      
+        v0[i],aux[i]=fError(v0[i],f,iteraciones, r,aux[i])
+    for i in range(iteraciones):
+        aux[:,i].sort()
+        
+    for i in range(iteraciones-1):
+        for j in range(v0.size):
+            aux[j][iteraciones-1-i]=np.abs(aux[j][iteraciones-1-i]-aux[j][iteraciones-2-i])
+            
+    for j in range(v0.size):
+            aux[j][0]=np.abs(aux[j][0]-v0[j])
+     
+    for i in range(iteraciones):
+        error[i]=max(aux[:,i])        
+    error.sort()    
+            
+    return v0,error[max(np.round(iteraciones/100)*cuantil-1,0)]     
 
 #Dado un punto x0 y el parámetro r, calcula la órbita y devuelve su cardinal
 def atractor(x, r):
@@ -68,9 +81,10 @@ def atractor(x, r):
         #Si lo encontramos, tomamos esos elementos en v0
         error = 0
         v0 = orb[-1*np.arange(periodo,0,-1)]
-        v0,error = afinar(v0,logistica, r, periodo)
-        print("V0 está formado por ",v0, ", cuyos valores se han calculado con un error de ",str(error))
-    return periodo
+        #Afinamos V0 calculando su error con cuantil 90
+        v0,error = afinar(v0,logistica, r, 10,90)
+        return periodo,v0,error
+    return periodo,0,0
     
 
 def apartado1():
@@ -80,8 +94,12 @@ def apartado1():
     r2 = rand.uniform(3.0001 ,3.4999)
     x01 = rand.random()
     x02 = rand.random()
-    atractor(x01, r1)
-    atractor(x02, r2)
+    per1,v01,error1=atractor(x01, r1)
+    if per1 !=-1:
+        print("V0 está formado por ",v01,", cuyos valores se han calculado con un error de ",error1)
+    per2,v02,error2=atractor(x02, r2)
+    if per2 != -1:
+        print("V0 está formado por ",v02,", cuyos valores se han calculado con un error de ",error2)
 
 def apartado2():
     global PINTAR_GRAFICA
@@ -93,7 +111,7 @@ def apartado2():
     #Iteramos hasta encontar un r tal que V0 tenga 8 elementos
     while cardinalV0 != 8:
         r = (a+b)/2
-        cardinalV0 = atractor(x0, r)
+        cardinalV0,aux,aux = atractor(x0, r)
         if cardinalV0 > 8 or cardinalV0 == -1:
             b = r
         elif cardinalV0 < 8:
@@ -106,9 +124,9 @@ def apartado2():
     #Iteramos 20 veces para reducir el error
     for i in range(20):
         r1 = (a1 + b1)/2
-        cardinalV01 = atractor(x0,r1)
+        cardinalV01,aux,aux = atractor(x0,r1)
         r2 = (a2 + b2)/2
-        cardinalV02 = atractor(x0,r2)
+        cardinalV02,aux,aux = atractor(x0,r2)
         if cardinalV01 < 8:
             a1 = r1
         else:
@@ -121,6 +139,6 @@ def apartado2():
     print ([b1,a2])
 
 apartado1()
-#apartado2()
+apartado2()
     
  
