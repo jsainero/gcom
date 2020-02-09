@@ -54,7 +54,7 @@ def afinar(v0,f, r, iteraciones, cuantil):
         error[i]=max(aux[:,i])        
     error.sort()    
             
-    return v0,error[max(np.round(iteraciones/100)*cuantil-1,0)]     
+    return v0,error[max(round(iteraciones*cuantil-1),0)]     
 
 #Dado un punto x0 y el parámetro r, calcula la órbita y devuelve su cardinal
 def atractor(x, r):
@@ -67,6 +67,7 @@ def atractor(x, r):
     if PINTAR_GRAFICA:
         abscisas = np.linspace(0,n-1,n)
         plt.plot(abscisas,orb)
+        plt.show()
     #Tomamos los k últimos términos de la sucesión
     ult=orb[-1*np.arange(k,0,-1)]    
     periodo = -1
@@ -75,34 +76,45 @@ def atractor(x, r):
         if abs(ult[k - 1] - ult[k - i - 1]) < EPSILON:
             periodo = i
             break
-    if periodo == -1:
-        print ("No se ha encontrado un periodo")
-    else:
-        print("Periodo: "+str(periodo))
+    if periodo != -1:        
         #Si lo encontramos, tomamos esos elementos en v0
         error = 0
         v0 = orb[-1*np.arange(periodo,0,-1)]
-        #Afinamos V0 calculando su error con cuantil 90
-        v0,error = afinar(v0,logistica, r, 10,90)
+        #Afinamos V0 calculando su error con cuantil de orden 0,9
+        v0,error = afinar(v0,logistica, r, 10,0.9)
         return periodo,v0,error
     return periodo,0,0
     
 
 def apartado1():
+    print("APARTADO UNO:\n")
     global PINTAR_GRAFICA
     PINTAR_GRAFICA = True
     r1 = rand.uniform(3.0001 ,3.4999)
     r2 = rand.uniform(3.0001 ,3.4999)
     x01 = rand.random()
     x02 = rand.random()
-    per1,v01,error1=atractor(x01, r1)
+    
+    print("Primer atractor:")
+    per1,v01,error1=atractor(x01, r1)    
     if per1 !=-1:
+        print("Periodo: "+str(per1))
         print("V0 está formado por ",v01,", cuyos valores se han calculado con un error de ",error1)
+    else:
+        print ("No se ha encontrado un periodo")
+    print("\n\n")
+    
+    print("Segundo atractor:")
     per2,v02,error2=atractor(x02, r2)
     if per2 != -1:
+        print("Periodo: "+str(per2))
         print("V0 está formado por ",v02,", cuyos valores se han calculado con un error de ",error2)
-
+    else:
+        print ("No se ha encontrado un periodo")
+    print("\n\n\n")
+        
 def apartado2():
+    print("APARTADO DOS:\n")
     global PINTAR_GRAFICA
     PINTAR_GRAFICA = False
     x0 = rand.random()
@@ -137,7 +149,7 @@ def apartado2():
         else:
             a2 = r2
     #Devolvemos b1 y a2 para asegurarnos que en esos puntos el periodo vale 8
-    print ([b1,a2])
+    print ("Para r perteneciente al intervalo ",[b1,a2]," v0 tiene 8 elementos.")
 
 apartado1()
 apartado2()
