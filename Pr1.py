@@ -11,7 +11,7 @@ import random as rand
 import matplotlib.pyplot as plt
 
 PINTAR_GRAFICA = True
-EPSILON = 1e-6;
+EPSILON = 1e-6
 
 #Dado un punto x y el parámetro r devuelve el valor de la función en x
 def logistica(x, r):
@@ -23,16 +23,29 @@ def fn(x0, f, n, r):
     for j in range(n):
         x=f(x, r)
     return x
-    
-def afinar(v0,f, r):
+
+def fnError(x0, f, n, r, errorMax, periodo):
+    ant = x0
+    x=x0
+    for j in range(n):
+        x=fn(x, f, periodo, r)
+        errorMax[j]=max(errorMax[j],x-ant)
+        ant = x
+    return x,errorMax
+ 
+def afinar(v0,f, r, periodo):
+    error=0
+    aux=np.zeros(100)
     for i in range(v0.size):
-        v0[i]=fn(v0[i],f,100, r)
-    return v0        
+        v0[i],aux=fnError(v0[i],f,100, r,aux, periodo)
+    aux.sort()
+    error = aux[94]
+    return v0,error      
 
 #Dado un punto x0 y el parámetro r, calcula la órbita y devuelve su cardinal
 def atractor(x, r):
-    k = 25;
-    n = 500
+    k = 25
+    n = 100
     orb =  np.zeros(n)
     #Calculamos los n primeros términos de la sucesión x_n+1=f(x_n)
     for i in range(n):
@@ -53,14 +66,16 @@ def atractor(x, r):
     else:
         print("Periodo: "+str(periodo))
         #Si lo encontramos, tomamos esos elementos en v0
+        error = 0
         v0 = orb[-1*np.arange(periodo,0,-1)]
-        v0 = afinar(v0,logistica, r)
+        v0,error = afinar(v0,logistica, r, periodo)
+        print("V0 está formado por ",v0, ", cuyos valores se han calculado con un error de ",str(error))
     return periodo
     
 
 def apartado1():
     global PINTAR_GRAFICA
-    PINTAR_GRAFICA = True;
+    PINTAR_GRAFICA = True
     r1 = rand.uniform(3.0001 ,3.4999)
     r2 = rand.uniform(3.0001 ,3.4999)
     x01 = rand.random()
@@ -106,5 +121,6 @@ def apartado2():
     print ([b1,a2])
 
 apartado1()
-apartado2()
+#apartado2()
+    
  
