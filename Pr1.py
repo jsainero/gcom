@@ -1,10 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Feb  3 10:14:07 2020
-
 @author: Jorge Sainero y Lucas de Torre
 """
-#poner errores
 
 import numpy as np
 import random as rand
@@ -24,8 +22,9 @@ def fn(x0, f, n, r):
         x=f(x, r)
     return x
 
-def fError(x0, f, n, r, aux):
+def fError(x0, f, n, r):
     x=x0
+    aux=np.zeros(n)
     for j in range(n):
         x=f(x, r)
         aux[j]=x
@@ -39,7 +38,7 @@ def afinar(v0,f, r, iteraciones, cuantil):
     v0.sort()
     v0ini=v0
     for i in range(v0.size):
-        v0[i],aux[i]=fError(v0[i],f,iteraciones, r,aux[i])
+        v0[i],aux[i]=fError(v0[i],f,iteraciones, r)
     for i in range(iteraciones):
         aux[:,i].sort()
         
@@ -59,14 +58,14 @@ def afinar(v0,f, r, iteraciones, cuantil):
 #Dado un punto x0 y el parámetro r, calcula la órbita y devuelve su cardinal
 def atractor(x, r):
     k = 25
-    n = 100
+    n = 200
     orb =  np.zeros(n)
     #Calculamos los n primeros términos de la sucesión x_n+1=f(x_n)
     for i in range(n):
         orb[i] = fn(x,logistica,i, r)
     if PINTAR_GRAFICA:
-        abscisas = np.linspace(0,n-1,n)
-        plt.plot(abscisas,orb)
+        abscisas = np.linspace(100,n,n-100)
+        plt.plot(abscisas,orb[99:n-1])
         plt.show()
     #Tomamos los k últimos términos de la sucesión
     ult=orb[-1*np.arange(k,0,-1)]    
@@ -153,5 +152,3 @@ def apartado2():
 
 apartado1()
 apartado2()
-    
- 
