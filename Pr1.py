@@ -22,6 +22,7 @@ def fn(x0, f, n, r):
         x=f(x, r)
     return x
 
+#Aplica n veces al función f en x0 y guarda todos los valores para después calcular el error
 def fError(x0, f, n, r):
     x=x0
     aux=np.zeros(n)
@@ -31,7 +32,7 @@ def fError(x0, f, n, r):
     return x,aux
  
     
-#Esta funcion afina V0 y calcula su error realizando las diferencias entre sucesivas iteraciones    
+#Esta función afina V0 y calcula su error realizando las diferencias entre sucesivas iteraciones    
 def afinar(v0,f, r, iteraciones, cuantil):
     error=np.zeros(iteraciones)
     aux=np.zeros((v0.size,iteraciones))
@@ -70,7 +71,7 @@ def atractor(x, r):
     #Tomamos los k últimos términos de la sucesión
     ult=orb[-1*np.arange(k,0,-1)]    
     periodo = -1
-    #Calculamos el periodo de la órbita para saber cuantos elementos tiene y cuales son
+    #Calculamos el periodo de la órbita para saber cuántos elementos tiene y cuáles son
     for i in range(1,k,1):
         if abs(ult[k - 1] - ult[k - i - 1]) < EPSILON:
             periodo = i
@@ -95,6 +96,7 @@ def apartado1():
     x02 = rand.random()
     
     print("Primer atractor:")
+    print("r =",str(r1),"; x0 =",str(x01))
     per1,v01,error1=atractor(x01, r1)    
     if per1 !=-1:
         print("Periodo: "+str(per1))
@@ -103,7 +105,8 @@ def apartado1():
         print ("No se ha encontrado un periodo")
     print("\n\n")
     
-    print("Segundo atractor:")
+    print("Segundo atractor:")    
+    print("r =",str(r2),"; x0 =",str(x02))
     per2,v02,error2=atractor(x02, r2)
     if per2 != -1:
         print("Periodo: "+str(per2))
