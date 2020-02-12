@@ -2,10 +2,12 @@
 Práctica 2
 """
 
-import os
+#import os
 import numpy as np
 import pandas as pd
 import math
+from itertools import accumulate as acc
+import matplotlib.pyplot as plt
 
 #### Carpeta donde se encuentran los archivos ####
 #ubica = "C:/Users/Python"
@@ -118,15 +120,14 @@ def extract_code():
                 d[c]+='1'
             else:
                 d[c]='1'
-    #print(d)
     return d
 
 def longitudMedia():
     d=extract_code()
     ac=0
-    for k in d.keys():
-        ac+=len(d[k])
-    return ac/len(d)
+    for i,k in distr.iterrows():
+        ac+=len(d[k['states']])*k['probab']
+    return ac
 
 def entropia():
     h=0
@@ -142,15 +143,18 @@ def apartado1():
     global distr
     distr = distr_en
     tree = huffman_tree(distr)
-    print ("La longitud media de Senglish es :"+str(longitudMedia()))       
+    print ("La longitud media de Senglish es: "+str(longitudMedia()))       
     h_en=entropia()
-    print(h_en,"\n")
+    print("La entropía de Senglish es: ",h_en)
+    print("Vemos que se cumple el Teorema de Shannon ya que",h_en,"<=",str(longitudMedia()),"<",h_en+1,"\n")
+    
     
     distr = distr_es
     tree = huffman_tree(distr)
-    print ("La longitud media de Sspanish es :"+str(longitudMedia()))       
+    print ("La longitud media de Sspanish es: "+str(longitudMedia()))       
     h_es=entropia()
-    print(h_es,"\n\n")
+    print("La entropía de Sspanish es: ",h_es)
+    print("Vemos que se cumple el Teorema de Shannon ya que",h_es,"<=",str(longitudMedia()),"<",h_es+1,"\n\n")
     
 def codificar(pal, d):
     binario=""
@@ -189,19 +193,30 @@ def apartado3():
     tree = huffman_tree(distr)    
     d_en=extract_code()
     d_en_inv=dict(zip(list(d_en.values()),list(d_en.keys())))
-    pal_bin='0000111011111111111010'
+    pal_bin='1010100011110111100011'
     palabra=decodificar(pal_bin,d_en_inv)
     print("La palabra cuyo código binario es: ",pal_bin," en inglés es: ",palabra)
     
+def gini_wini():
+    gini=0
+    #ya está ordenado así que no hace falta
+    accu=list(acc(distr['probab']))
+    plt.plot(np.linspace(0,1,len(accu)),accu)
+    plt.show()
+    for i in range(1,len(accu)):
+        gini+=(accu[i]+accu[i-1])/len(accu)
+    return 1-gini
+    
 def apartado4():
-    print("APARTADO TRES:\n")
+    print("APARTADO CUATRO:\n")
     global tree
     global distr
-    distr = distr_en
-    tree = huffman_tree(distr)    
-    d_en=extract_code()
+    distr = distr_en   
+    print("El gini de Senglish es: ",gini_wini())
+    distr = distr_es
+    print("El gini de Sspanish es: ",gini_wini())
     
-    
+  
 apartado1()
 apartado2() 
 apartado3()
