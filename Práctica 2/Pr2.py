@@ -213,7 +213,7 @@ def diver2hill():
     aux=0
     for p in distr['probab']:
         aux+=p*p
-    return 1/p
+    return 1/aux
 
     
 def apartado4():
