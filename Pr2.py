@@ -9,6 +9,7 @@ import math
 from itertools import accumulate as acc
 import matplotlib.pyplot as plt
 
+
 #### Carpeta donde se encuentran los archivos ####
 #ubica = "C:/Users/Python"
 
@@ -195,28 +196,36 @@ def apartado3():
     d_en_inv=dict(zip(list(d_en.values()),list(d_en.keys())))
     pal_bin='1010100011110111100011'
     palabra=decodificar(pal_bin,d_en_inv)
-    print("La palabra cuyo código binario es: ",pal_bin," en inglés es: ",palabra)
+    print("La palabra cuyo código binario es: ",pal_bin," en inglés es: ",palabra,end='\n\n\n')
     
-def gini_wini():
-    gini=0
+def gini():
+    aux=0
     #ya está ordenado así que no hace falta
     accu=list(acc(distr['probab']))
     plt.plot(np.linspace(0,1,len(accu)),accu)
+    plt.plot(np.linspace(0,1,len(accu)),np.linspace(0,1,len(accu)))
     plt.show()
     for i in range(1,len(accu)):
-        gini+=(accu[i]+accu[i-1])/len(accu)
-    return 1-gini
+        aux+=(accu[i]+accu[i-1])/len(accu)
+    return 1-aux
+
+def diver2hill():
+    aux=0
+    for p in distr['probab']:
+        aux+=p*p
+    return 1/p
+
     
 def apartado4():
     print("APARTADO CUATRO:\n")
-    global tree
     global distr
     distr = distr_en   
-    print("El gini de Senglish es: ",gini_wini())
+    print("El índice de Gini de Senglish es: ",gini())
+    print("La diversidad 2D de Hill de Senglish es: ",diver2hill())
     distr = distr_es
-    print("El gini de Sspanish es: ",gini_wini())
-    
-  
+    print("El índice de Gini de Sspanish es: ",gini())
+    print("La diversidad 2D de Hill de Sspanish es: ",diver2hill())
+
 apartado1()
 apartado2() 
 apartado3()
