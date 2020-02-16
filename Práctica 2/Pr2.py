@@ -101,10 +101,11 @@ tree[0].values()
 list(tree[0].items())[0][0] ## Esto proporciona un '0'
 list(tree[0].items())[1][0] ## Esto proporciona un '1'
 
-
+#Extrae el código binario de Huffman de cada carácter y lo devuelve en un diccionario {carácter : código}
 def extract_code():
     global tree
     d = dict()
+    #Empezamos por el final porque es donde está la raíz
     for i in range(tree.size-1,-1,-1):
         elem=tree[i]
         h1=list(elem.keys())[0]
@@ -123,6 +124,7 @@ def extract_code():
                 d[c]='1'
     return d
 
+#Calcula la longitud del código binario de Huffman 
 def longitudMedia():
     d=extract_code()
     ac=0
@@ -130,6 +132,7 @@ def longitudMedia():
         ac+=len(d[k['states']])*k['probab']
     return ac
 
+#Calcula la entropía de una variable aleatoria con la distribución de probabilidades distr['probab']
 def entropia():
     h=0
     for p in distr['probab']:
@@ -156,7 +159,8 @@ def apartado1():
     h_es=entropia()
     print("La entropía de Sspanish es: ",h_es)
     print("Vemos que se cumple el Teorema de Shannon ya que",h_es,"<=",str(longitudMedia()),"<",h_es+1,"\n\n")
-    
+ 
+#Codifica la palabra pal según el diccionario d
 def codificar(pal, d):
     binario=""
     for l in pal:
@@ -175,7 +179,15 @@ def apartado2():
     print("El codigo binario de la palabra fractal en lengua inglesa es: ",pal_bin," y su longitud es: ",len(pal_bin))
     #La longitud en binario usual es ceil(log2(cantidadDeCracteres)) por cada letra
     print("En binario usual sería de longitud: ", len(palabra)*math.ceil(math.log(len(d_en),2)),"\n\n")
+    distr = distr_es
+    tree = huffman_tree(distr)    
+    d_es=extract_code()
+    pal_bin =codificar(palabra,d_es)
+    print("El codigo binario de la palabra fractal en lengua española es: ",pal_bin," y su longitud es: ",len(pal_bin))
+    #La longitud en binario usual es ceil(log2(cantidadDeCracteres)) por cada letra
+    print("En binario usual sería de longitud: ", len(palabra)*math.ceil(math.log(len(d_es),2)),"\n\n")
 
+#Decodifica la palabra pal según el diccionario d
 def decodificar(pal,d):
     aux=''
     decode=''
@@ -193,11 +205,13 @@ def apartado3():
     distr = distr_en
     tree = huffman_tree(distr)    
     d_en=extract_code()
+    #Invertimos el diccionario para poder decodificar
     d_en_inv=dict(zip(list(d_en.values()),list(d_en.keys())))
-    pal_bin='1010100011110111100011'
+    pal_bin='1010100001111011111100'
     palabra=decodificar(pal_bin,d_en_inv)
     print("La palabra cuyo código binario es: ",pal_bin," en inglés es: ",palabra,end='\n\n\n')
-    
+
+#Calcula el índice de Gini de una variable aleatoria con la distribución de probabilidades distr['probab']  
 def gini():
     aux=0
     #ya está ordenado así que no hace falta
@@ -209,6 +223,7 @@ def gini():
         aux+=(accu[i]+accu[i-1])/len(accu)
     return 1-aux
 
+#Calcula la diversidad 2D de Hill de una variable aleatoria con la distribución de probabilidades distr['probab'] 
 def diver2hill():
     aux=0
     for p in distr['probab']:
