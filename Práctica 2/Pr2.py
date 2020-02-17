@@ -8,7 +8,7 @@ import pandas as pd
 import math
 from itertools import accumulate as acc
 import matplotlib.pyplot as plt
-
+from collections import Counter
 
 #### Carpeta donde se encuentran los archivos ####
 #ubica = "C:/Users/Python"
@@ -125,8 +125,7 @@ def extract_code():
     return d
 
 #Calcula la longitud del código binario de Huffman 
-def longitudMedia():
-    d=extract_code()
+def longitudMedia(d):
     ac=0
     for i,k in distr.iterrows():
         ac+=len(d[k['states']])*k['probab']
@@ -147,18 +146,22 @@ def apartado1():
     global distr
     distr = distr_en
     tree = huffman_tree(distr)
-    print ("La longitud media de Senglish es: "+str(longitudMedia()))       
+    d=extract_code()
+    print("Una pequeña muestra del diccionario con la codificación de Senglish:",dict(Counter(d).most_common(7)),'\n')
+    print ("La longitud media de Senglish es: "+str(longitudMedia(d)))       
     h_en=entropia()
     print("La entropía de Senglish es: ",h_en)
-    print("Vemos que se cumple el Teorema de Shannon ya que",h_en,"<=",str(longitudMedia()),"<",h_en+1,"\n")
+    print("Vemos que se cumple el Teorema de Shannon ya que",h_en,"<=",str(longitudMedia(d)),"<",h_en+1,"\n")
     
     
     distr = distr_es
     tree = huffman_tree(distr)
-    print ("La longitud media de Sspanish es: "+str(longitudMedia()))       
+    d=extract_code()
+    print("Una pequeña muestra del diccionario con la codificación de Sspanish:",dict(Counter(d).most_common(7)),'\n')
+    print ("La longitud media de Sspanish es: "+str(longitudMedia(d)))       
     h_es=entropia()
     print("La entropía de Sspanish es: ",h_es)
-    print("Vemos que se cumple el Teorema de Shannon ya que",h_es,"<=",str(longitudMedia()),"<",h_es+1,"\n\n")
+    print("Vemos que se cumple el Teorema de Shannon ya que",h_es,"<=",str(longitudMedia(d)),"<",h_es+1,"\n\n")
  
 #Codifica la palabra pal según el diccionario d
 def codificar(pal, d):
@@ -176,16 +179,16 @@ def apartado2():
     d_en=extract_code()
     palabra = "fractal"
     pal_bin =codificar(palabra,d_en)
-    print("El codigo binario de la palabra fractal en lengua inglesa es: ",pal_bin," y su longitud es: ",len(pal_bin))
+    print("El codigo binario de la palabra fractal en lengua inglesa es:",pal_bin,"y su longitud es:",len(pal_bin))
     #La longitud en binario usual es ceil(log2(cantidadDeCracteres)) por cada letra
-    print("En binario usual sería de longitud: ", len(palabra)*math.ceil(math.log(len(d_en),2)),"\n\n")
+    print("En binario usual sería de longitud:", len(palabra)*math.ceil(math.log(len(d_en),2)),"\n\n")
     distr = distr_es
     tree = huffman_tree(distr)    
     d_es=extract_code()
     pal_bin =codificar(palabra,d_es)
-    print("El codigo binario de la palabra fractal en lengua española es: ",pal_bin," y su longitud es: ",len(pal_bin))
+    print("El codigo binario de la palabra fractal en lengua española es:",pal_bin,"y su longitud es:",len(pal_bin))
     #La longitud en binario usual es ceil(log2(cantidadDeCracteres)) por cada letra
-    print("En binario usual sería de longitud: ", len(palabra)*math.ceil(math.log(len(d_es),2)),"\n\n")
+    print("En binario usual sería de longitud:", len(palabra)*math.ceil(math.log(len(d_es),2)),"\n\n")
 
 #Decodifica la palabra pal según el diccionario d
 def decodificar(pal,d):
@@ -209,7 +212,7 @@ def apartado3():
     d_en_inv=dict(zip(list(d_en.values()),list(d_en.keys())))
     pal_bin='1010100001111011111100'
     palabra=decodificar(pal_bin,d_en_inv)
-    print("La palabra cuyo código binario es: ",pal_bin," en inglés es: ",palabra,end='\n\n\n')
+    print("La palabra cuyo código binario es:",pal_bin,"en inglés es:",palabra,end='\n\n\n')
 
 #Calcula el índice de Gini de una variable aleatoria con la distribución de probabilidades distr['probab']  
 def gini():
