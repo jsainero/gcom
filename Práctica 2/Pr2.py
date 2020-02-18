@@ -217,7 +217,7 @@ def apartado3():
 #Calcula el índice de Gini de una variable aleatoria con la distribución de probabilidades distr['probab']  
 def gini():
     aux=0
-    #ya está ordenado así que no hace falta
+    #ya está ordenado así que no hace falta ordenarlo
     accu=list(acc(distr['probab']))
     plt.plot(np.linspace(0,1,len(accu)),accu)
     plt.plot(np.linspace(0,1,len(accu)),np.linspace(0,1,len(accu)))
