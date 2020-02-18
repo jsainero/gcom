@@ -101,6 +101,12 @@ tree[0].values()
 list(tree[0].items())[0][0] ## Esto proporciona un '0'
 list(tree[0].items())[1][0] ## Esto proporciona un '1'
 
+"""
+A partir de aqu´ı, c´odigo escrito por:
+- Jorge Sainero Valle
+- Lucas de Torre Barrio
+"""
+
 #Extrae el código binario de Huffman de cada carácter y lo devuelve en un diccionario {carácter : código}
 def extract_code():
     global tree
