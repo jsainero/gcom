@@ -27,8 +27,10 @@ X, labels_true = make_blobs(n_samples=1000, centers=centers, cluster_std=0.4,
 #from sklearn.preprocessing import StandardScaler
 #X = StandardScaler().fit_transform(X)  
 
+print('MUESTRA')
 plt.plot(X[:,0],X[:,1],'ro', markersize=1)
 plt.show()
+print('\n\n\n')
 
 '''
 A partir de aquí, código escrito por 
@@ -74,6 +76,7 @@ def kMeans(k):
     return silhouette
 
 def bestSilhouetteKmeans():
+    print('KMeans')
     sils=np.zeros(15)
     maxi=-1
     for i in range(1,16):
@@ -86,11 +89,12 @@ def bestSilhouetteKmeans():
     plt.show()
     print("El valor óptimo de Silhouette con el algoritmo KMeans es %0.3f" % maxi, "y se obtiene con", j, "clusters")
     graficaKMeans(j);
+    print('\n\n\n')
     
 bestSilhouetteKmeans()
 
 def graficaDBSCAN(epsilon,metrica):
-    db = DBSCAN(eps=epsilon, min_samples=100, metric=metrica).fit(X)    
+    db = DBSCAN(eps=epsilon, min_samples=10, metric=metrica).fit(X)    
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
     labels = db.labels_
@@ -114,26 +118,25 @@ def graficaDBSCAN(epsilon,metrica):
     plt.show()
 
 def dbscan(epsilon,metrica):
-    db = DBSCAN(eps=epsilon, min_samples=100, metric=metrica).fit(X)
+    db = DBSCAN(eps=epsilon, min_samples=10, metric=metrica).fit(X)
     
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
     core_samples_mask[db.core_sample_indices_] = True
     labels = db.labels_
     
     # Number of clusters in labels, ignoring noise if present.
-  
-    if len(set(labels)) == 1:
-        n_clusters_=1
+    n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
+
+    if n_clusters_<=1:
         silhouette=-1
     else:
-        n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
         silhouette=metrics.silhouette_score(X, labels)
     #print("Silhouette Coefficient: %0.3f"  % silhouette )
     return [n_clusters_,silhouette]
     
 def bestSilhouetteDBSCAN():
-    silsEuc=[[dbscan(i,'euclidean'),i] for i in np.arange(0.1,1.05,0.05)]
-    
+    print('DBSCAN euclideo')
+    silsEuc=[[dbscan(i,'euclidean'),i] for i in np.arange(0.1,1.05,0.05)]    
     silsMan=[[dbscan(i,'manhattan'),i] for i in np.arange(0.1,1.05,0.05)]
     n_clusters_euc=0
     maxieuc=-1
@@ -152,7 +155,9 @@ def bestSilhouetteDBSCAN():
     plt.show()
     print("El valor óptimo de Silhouette es %0.3f" % maxieuc, "y se obtiene con umbral de distancia %0.2f" % epsilon_euc, "que da lugar a",n_clusters_euc,"clusters")
     graficaDBSCAN(epsilon_euc,'euclidean')
+    print('\n\n\n')
     
+    print('DBSCAN Manhattan')
     for sil in silsMan:
         if (sil[0][1]>maximan):
             maximan = sil[0][1]
@@ -162,7 +167,7 @@ def bestSilhouetteDBSCAN():
     plt.plot([silsMan[i][1] for i in range(len(silsMan))],[silsMan[i][0][1] for i in range(len(silsMan))])
     plt.show()
     print("El valor óptimo de Silhouette es %0.3f" % maximan, "y se obtiene con umbral de distancia %0.2f" % epsilon_man, "que da lugar a",n_clusters_man,"clusters")
-
+    graficaDBSCAN(epsilon_euc,'manhattan')
 
 bestSilhouetteDBSCAN()
 
