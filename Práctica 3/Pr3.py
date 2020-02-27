@@ -66,13 +66,11 @@ def kMeans(k):
     global X
     kmeans = KMeans(n_clusters=k, random_state=0).fit(X)
     labels = kmeans.labels_
+    #para que no falle cuando solo hay un cluster
     if k==1:
        silhouette = -1
     else:
         silhouette = metrics.silhouette_score(X, labels)
-    #print("Los centros de los",k,"clusters son:",kmeans.cluster_centers_)
-    #print("El coeficiente de Silhouette para nuestro sistema de 1000 elementos distribuidos en",k,"clusters es: %0.3f" % silhouette)
-    #grafica(labels,k)
     return silhouette
 
 def bestSilhouetteKmeans():
@@ -91,8 +89,6 @@ def bestSilhouetteKmeans():
     graficaKMeans(j);
     print('\n\n\n')
     
-bestSilhouetteKmeans()
-
 def graficaDBSCAN(epsilon,metrica):
     db = DBSCAN(eps=epsilon, min_samples=10, metric=metrica).fit(X)    
     core_samples_mask = np.zeros_like(db.labels_, dtype=bool)
@@ -113,8 +109,8 @@ def graficaDBSCAN(epsilon,metrica):
         xy = X[class_member_mask]
         plt.plot(xy[:, 0], xy[:, 1], 'o', markerfacecolor=tuple(col),
                  markeredgecolor='k', markersize=5)
-    
-    #plt.title('Fixed number of KMeans clusters: %d' % n_clusters)
+    #Restamos uno para no contar el ruido
+    plt.title('Fixed number of DBSCAN '+metrica+' clusters: %d' % (len(unique_labels)-1))
     plt.show()
 
 def dbscan(epsilon,metrica):
@@ -126,12 +122,11 @@ def dbscan(epsilon,metrica):
     
     # Number of clusters in labels, ignoring noise if present.
     n_clusters_ = len(set(labels)) - (1 if -1 in labels else 0)
-
+    #para que no falle cuando solo hay un cluster
     if n_clusters_<=1:
         silhouette=-1
     else:
         silhouette=metrics.silhouette_score(X, labels)
-    #print("Silhouette Coefficient: %0.3f"  % silhouette )
     return [n_clusters_,silhouette]
     
 def bestSilhouetteDBSCAN():
@@ -169,6 +164,5 @@ def bestSilhouetteDBSCAN():
     print("El valor óptimo de Silhouette es %0.3f" % maximan, "y se obtiene con umbral de distancia %0.2f" % epsilon_man, "que da lugar a",n_clusters_man,"clusters")
     graficaDBSCAN(epsilon_euc,'manhattan')
 
+bestSilhouetteKmeans()
 bestSilhouetteDBSCAN()
-
-    
