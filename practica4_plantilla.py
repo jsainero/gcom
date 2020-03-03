@@ -26,7 +26,12 @@ from sklearn.decomposition import PCA
 
 
 #f = nc.netcdf_file(workpath + "/" + files[0], 'r')
-f = nc.netcdf_file("air.2019.nc", 'r')
+f = nc.netcdf_file("hgt.2019.nc", 'r')
+
+
+###############################################
+#cambiar los air por hgt en las variables y todo
+##############################################
 
 print(f.history)
 print(f.dimensions)
@@ -37,12 +42,14 @@ time_units = f.variables['time'].units
 level = f.variables['level'][:].copy() #los valores de p
 lats = f.variables['lat'][:].copy() #los valores de y
 lons = f.variables['lon'][:].copy() #los valores de x
-air = f.variables['air'][:].copy() #los valores de cada día
-air_units = f.variables['air'].units
+air = f.variables['hgt'][:].copy() #los valores de cada día
+air_units = f.variables['hgt'].units
+#tem=f.variables['air']
+#tem_scale_factor=tem.scale_factor.copy()
+#tem_add_offset=tem.add_offset.copy()
 print(air.shape)
-
 f.close()
-print(lats)
+print(len(lats))
 
 """
 Ejemplo de evolución temporal de un elemento de aire
@@ -125,24 +132,40 @@ for t in range(len(time)):
     if dt.date(1800, 1, 1) + dt.timedelta(hours=time[t]) == dt.date(2020,1,20):
         break
     
-for max_lat in range(len(lats)-1,-1,-1):
-    if lats[max_lat]==-20:
-        min_lat=max_lat
-    if lats[max_lat]==20:
+#tienen que ir de -20 a 20 
+double_lons=np.concatenate((lons, lons), axis=None)
+#print(double_lons)
+min_lon=-1
+for max_lon in range(len(double_lons)):
+    if double_lons[max_lon]==340:
+        min_lon=max_lon
+    if double_lons[max_lon]==20 and not min_lon==-1:
         break
 
-for max_lon in range(len(lons)):
-    if lons[max_lon]==30:
-        min_lon=max_lon
-    if lons[max_lon]==50:
+#tiene que ir de 30 a 50 pero está ordenado al reves
+for max_lat in range(len(lats)):
+    if lats[max_lat]==50:
+        min_lat=max_lat
+    if lats[max_lat]==30:
         break
     
 
-print(max_lat,min_lat)
+print(min_lat,max_lat)
 print(min_lon,max_lon)
-subair = air[t,:,max_lat:min_lat,min_lon:max_lon]
 
-print(air[t,10,20,0])
+
+d0 = air[t,:,min_lat:max_lat,min_lon:max_lon]
+
+IND_500=5
+IND_1000=0
+
+#cargar los datos de 2019
+def dist_euc(d0,d):
+    dist=0
+    for i in range(max_lat,min_lat+1):
+        for j in range(min_lon,max_lon+1):
+            dist+=0.5*(d0[i,j%len(lons),IND_500]-d[i,j%len(lons),IND_500])**2+0.5*(d0[i,j%len(lons),IND_1000]-d[i,j%len(lons),IND_1000])**2
+    return np.sqrt(dist)
 
 
 
