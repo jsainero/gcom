@@ -44,7 +44,11 @@ lats = f.variables['lat'][:].copy() #los valores de y
 lons = f.variables['lon'][:].copy() #los valores de x
 air = f.variables['hgt'][:].copy() #los valores de cada día
 air_units = f.variables['hgt'].units
+<<<<<<< HEAD
+#tem=f.variables['tem']
+=======
 #tem=f.variables['air']
+>>>>>>> 4d76016c87530e87c555b8c56108bce5b7678f8b
 #tem_scale_factor=tem.scale_factor.copy()
 #tem_add_offset=tem.add_offset.copy()
 print(air.shape)
