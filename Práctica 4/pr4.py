@@ -10,7 +10,6 @@ Referencias:
     
     Temperatura en niveles de presión:
     https://www.esrl.noaa.gov/psd/cgi-bin/db_search/DBListFiles.pl?did=59&tid=81620&vid=1497
-
 """
 #import os
 import datetime as dt  # Python standard library datetime  module
@@ -60,17 +59,19 @@ def apartado1():
     np.min(dt_time)
     np.max(dt_time)
     
-    
-    plt.title("Distribución espacial de la temperatura en el nivel de 500hPa, para el primer día")
-    plt.contour(lons, lats, hgt[1,1,:,:])
-    plt.show()
-    
     PRESION = 500
     for i in range(len(level)):
         if level[i]==PRESION:
             break
+    p500=i
     
-    hgt2 = hgt[:,i,:,:].reshape(len(time),len(lats)*len(lons))
+    plt.title("Distribución espacial de la altura geopotencial en el nivel de 500hPa, para el primer día")
+    plt.contour(lons, lats, hgt[0,p500,:,:])
+    plt.show()
+    
+   
+    
+    hgt2 = hgt[:,p500,:,:].reshape(len(time),len(lats)*len(lons))
     #hgt3 = hgt2.reshape(len(time),len(lats),len(lons))
     n_components=4
     
