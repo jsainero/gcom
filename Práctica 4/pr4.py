@@ -10,6 +10,7 @@ Referencias:
     
     Temperatura en niveles de presión:
     https://www.esrl.noaa.gov/psd/cgi-bin/db_search/DBListFiles.pl?did=59&tid=81620&vid=1497
+
 """
 #import os
 import datetime as dt  # Python standard library datetime  module
@@ -24,24 +25,15 @@ Apartado 1
 """
 
 def apartado1():
+    print("Apartado 1:\n")
     
     #Cargamos los datos de altura geopotencial del 2019
     f = nc.netcdf_file("hgt.2019.nc", 'r')    
-    #print(f.history)
-    #print(f.dimensions)
-    #print(f.variables)
     time = f.variables['time'][:].copy()
-    #time_bnds = f.variables['time_bnds'][:].copy()
-    #time_units = f.variables['time'].units
     level = f.variables['level'][:].copy() #los valores de p
     lats = f.variables['lat'][:].copy() #los valores de y
     lons = f.variables['lon'][:].copy() #los valores de x
     hgt = f.variables['hgt'][:].copy() #los valores de cada día
-    #hgt_units = f.variables['hgt'].units
-    #alt=f.variables['hgt']
-    #alt_scale_factor=tem.scale_factor.copy()
-    #alt_add_offset=tem.add_offset.copy()
-    #print(hgt.shape)
     f.close()
     
     """
@@ -49,49 +41,34 @@ def apartado1():
     
     plt.plot(time, hgt[:, 1, 1, 1], c='r')
     plt.show()
+ 
     """
-    #time_idx = 237  # some random day in 2012
-    # Python and the renalaysis are slightly off in time so this fixes that problem
-    # offset = dt.timedelta(hours=0)
-    # List of all times in the file as datetime objects
-    dt_time = [dt.date(1800, 1, 1) + dt.timedelta(hours=t) #- offset\
-               for t in time]
-    np.min(dt_time)
-    np.max(dt_time)
     
     PRESION = 500
     for i in range(len(level)):
         if level[i]==PRESION:
+            p500=i
             break
-    p500=i
     
-    plt.title("Distribución espacial de la altura geopotencial en el nivel de 500hPa, para el primer día")
+    plt.title("Distribución espacial de la temperatura en el nivel de 500hPa, para el primer día")
     plt.contour(lons, lats, hgt[0,p500,:,:])
     plt.show()
     
-   
     
+    #Seleccionamos los datos con p = 500hPa y redimensionamos la matriz
     hgt2 = hgt[:,p500,:,:].reshape(len(time),len(lats)*len(lons))
-    #hgt3 = hgt2.reshape(len(time),len(lats),len(lons))
+ 
     n_components=4
     
-    X = hgt2
     Y = hgt2.transpose()
     pca = PCA(n_components=n_components)
-    
-    pca.fit(X) #(creo) aqui intenta explicar la posición en función de la hgt
-    print(pca.explained_variance_ratio_.cumsum())
-    out = pca.singular_values_
-    
-    pca.fit(Y) #(creo) aqui al revés la hgt en función de la posición, 
-    #esto es más lógico y por eso se obtienen mejores resultados
-    print(pca.explained_variance_ratio_.cumsum())
-    out = pca.singular_values_
-    
-    
-    State_pca = pca.fit_transform(X)
+
+    #Aplicamos el algoritmo PCA
+    pca.fit(Y)
+    print("Valores explicados en función del número de componentes:",pca.explained_variance_ratio_.cumsum())    
     
     #Ejercicio de la práctica
+    #Representación espacial de las componentes principales
     Element_pca = pca.fit_transform(Y)
     Element_pca = Element_pca.transpose(1,0).reshape(n_components,len(lats),len(lons))
     print(Element_pca[0,0,0])
