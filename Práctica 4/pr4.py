@@ -26,6 +26,7 @@ Apartado 1
 
 
 def apartado1():
+<<<<<<< HEAD
 
     # Cargamos los datos de altura geopotencial del 2019
     f = nc.netcdf_file("hgt.2019.nc", 'r')
@@ -34,6 +35,17 @@ def apartado1():
     lats = f.variables['lat'][:].copy()  # los valores de y
     lons = f.variables['lon'][:].copy()  # los valores de x
     hgt = f.variables['hgt'][:].copy()  # los valores de cada día
+=======
+    print("Apartado 1:\n")
+    
+    #Cargamos los datos de altura geopotencial del 2019
+    f = nc.netcdf_file("hgt.2019.nc", 'r')    
+    time = f.variables['time'][:].copy()
+    level = f.variables['level'][:].copy() #los valores de p
+    lats = f.variables['lat'][:].copy() #los valores de y
+    lons = f.variables['lon'][:].copy() #los valores de x
+    hgt = f.variables['hgt'][:].copy() #los valores de cada día
+>>>>>>> 47da30c238721282e9eca4a0de58cc87f06be8d2
     f.close()
 
     """
@@ -43,6 +55,7 @@ def apartado1():
     plt.show()
  
     """
+<<<<<<< HEAD
 
     PRESION = 500
     for i in range(len(level)):
@@ -70,6 +83,34 @@ def apartado1():
 
     # Ejercicio de la práctica
     # Representación espacial de las componentes principales
+=======
+    
+    PRESION = 500
+    for i in range(len(level)):
+        if level[i]==PRESION:
+            p500=i
+            break
+    
+    plt.title("Distribución espacial de la temperatura en el nivel de 500hPa, para el primer día")
+    plt.contour(lons, lats, hgt[0,p500,:,:])
+    plt.show()
+    
+    
+    #Seleccionamos los datos con p = 500hPa y redimensionamos la matriz
+    hgt2 = hgt[:,p500,:,:].reshape(len(time),len(lats)*len(lons))
+ 
+    n_components=4
+    
+    Y = hgt2.transpose()
+    pca = PCA(n_components=n_components)
+
+    #Aplicamos el algoritmo PCA
+    pca.fit(Y)
+    print("Valores explicados en función del número de componentes:",pca.explained_variance_ratio_.cumsum())    
+    
+    #Ejercicio de la práctica
+    #Representación espacial de las componentes principales
+>>>>>>> 47da30c238721282e9eca4a0de58cc87f06be8d2
     Element_pca = pca.fit_transform(Y)
     Element_pca = Element_pca.transpose(1, 0).reshape(
         n_components, len(lats), len(lons))
