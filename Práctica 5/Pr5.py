@@ -83,8 +83,8 @@ z = np.outer(np.cos(u), np.ones_like(v))
 
 #Definimos una curva en la superficie de la esfera
 t2 = np.linspace(0.001, 1, 200)
-x2 = abs(t2) * np.sin(100 * t2/2)
-y2 = abs(t2) * np.cos(120 * t2/2)
+x2 = abs(t2) * np.sin(1000 * t2/2)
+y2 = abs(t2) * np.cos(1000 * t2/2)
 z2 = np.sqrt(1-x2**2-y2**2)
 #Aseguramos no hacer raíces negativos
 #z2 = np.array([np.sqrt(cerear(x2[i],y2[i])) for i in range(len(x2))])
@@ -183,8 +183,8 @@ def apartado2():
     ax = plt.axes(projection='3d')
     
     
-    ax.set_xlim3d(-8,8)
-    ax.set_ylim3d(-8,8)
+    ax.set_xlim3d(-1,1)
+    ax.set_ylim3d(-1,1)
     ax.plot_surface(xt, yt, zt, rstride=1, cstride=1,alpha=0.5,
                     cmap='viridis', edgecolor='none')
     ax.plot(x2t,y2t, z2t, '-b',c="gray")
@@ -203,7 +203,7 @@ def apartado2():
     plt.show()
     
     
-    fig = plt.figure(figsize=(6,6))
+    fig = plt.figure(figsize=(20,20))
     ani = animation.FuncAnimation(fig, animate, np.arange(0,1,0.05), init_func=init,
                                   interval=20)
     ani.save("ejemplo.gif", fps = 5) 
@@ -220,3 +220,6 @@ def apartado2():
 
 apartado1()
 apartado2()
+
+
+
