@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Wed Apr  8 23:53:36 2020
-
-@author: robert monjo
+@author: Jorge Sainero y Lucas de Torre
 """
 import os
 import numpy as np
@@ -53,9 +52,10 @@ def periodos(q,d,max=True):
     waves = waves[0][1:][diff_waves[0]>1]
     pers = diff_waves[diff_waves>1]*d
     return pers, waves
-d = 10**(-3)
+
+d = 10**(-3.5)
 ## Pintamos el espacio de fases
-def simplectica(q0,dq0,F,col=0,d=10**(-4),n = int(16/d),marker='-'): 
+def simplectica(q0,dq0,F,col=0,d=10**(-3.5),n = int(16/d),marker='-'): 
     q = orb(n,q0=q0,dq0=dq0,F=F,d=d)
     dq = deriv(q,dq0=dq0,d=d)
     p = dq/2
@@ -65,7 +65,10 @@ def simplectica(q0,dq0,F,col=0,d=10**(-4),n = int(16/d),marker='-'):
 #  CÁLCULO DE ÓRBITAS
 ################################################################# 
 def apartado1():
+    print("Apartado 1\n")
+    
     #Ejemplo gráfico del oscilador simple
+    """
     q0 = 0.
     dq0 = 1.
     fig, ax = plt.subplots(figsize=(12,5))
@@ -85,15 +88,16 @@ def apartado1():
     
     #Ejemplo de coordenadas canónicas (q, p)
     #Nos quedamos con el más fino y calculamos la coordenada canónica 'p'
+    
     q0 = 0.
     dq0 = 1.
-    d = 10**(-3)
+    d = 10**(-3.5)
     n = int(32/d)
     t = np.arange(n+1)*d
     q = orb(n,q0=q0,dq0=dq0,F=F,d=d)
     dq = deriv(q,dq0=dq0,d=d)
     p = dq/2
-    """
+    
     #Ejemplo gráfico de la derivada de q(t)
     fig, ax = plt.subplots(figsize=(12,5))
     plt.ylim(-1.5, 1.5)  
@@ -141,16 +145,16 @@ def apartado1():
 #Para eso, tomaremos los periodos de la órbita, que definen las ondas
     
 #Paso1: Buscamos las condiciones iniciales que maximizan/minimizan en área
-q0 = 0.
-dq0 = 2.
-d = 10**(-3.5)
+#q0 = 0.
+#dq0 = 2.
+#d = 10**(-3.5)
 def area_espacio_fasico(d):
     areas=[]
     for q0 in np.linspace(0.,1.,num=5):
         for dq0 in np.linspace(0.,2.,num=5):
             
             n = int(32/d)
-            t = np.arange(n+1)*d
+            #t = np.arange(n+1)*d
             q = orb(n,q0=q0,dq0=dq0,F=F,d=d)
             dq = deriv(q,dq0=dq0,d=d)
             p = dq/2
@@ -203,9 +207,9 @@ def area_espacio_fasico(d):
 def apartado2():
     iseq=np.linspace(3.01,3.99,num=11)
     areas=[area_espacio_fasico(10**(-d)) for d in iseq]
-    resta_areas=[areas[i]-areas[i+1] for i in range(len(areas)-1)]
+    resta_areas=[abs(areas[i]-areas[i+1]) for i in range(len(areas)-1)]
     sort_resta_areas=sorted(resta_areas)
-    print("El área calculado es:",areas[10],"-",sort_resta_areas[8])
+    print("El área calculada es:",areas[10],"-",sort_resta_areas[8])
 
 apartado1()
 apartado2()
