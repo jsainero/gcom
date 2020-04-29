@@ -150,8 +150,8 @@ def apartado1():
 #d = 10**(-3.5)
 def area_espacio_fasico(d):
     areas=[]
-    for q0 in np.linspace(0.,1.,num=5):
-        for dq0 in np.linspace(0.,2.,num=5):
+    for q0 in np.linspace(0.,1.,num=12):
+        for dq0 in np.linspace(0.,2.,num=12):
             
             n = int(32/d)
             #t = np.arange(n+1)*d
@@ -207,7 +207,7 @@ def area_espacio_fasico(d):
 def apartado2():
     iseq=np.linspace(3.01,3.99,num=11)
     areas=[area_espacio_fasico(10**(-d)) for d in iseq]
-    resta_areas=[abs(areas[i]-areas[i+1]) for i in range(len(areas)-1)]
+    resta_areas=[abs(areas[i]-areas[10]) for i in range(len(areas)-1)]
     sort_resta_areas=sorted(resta_areas)
     print("El área calculada es:",areas[10],"-",sort_resta_areas[8])
 
