@@ -2,7 +2,7 @@
 """
 Created on Tue Mar 10 18:58:33 2020
 
-@author: Robert
+@author: Jorge Sainero y Lucas de Torre con la plantilla de Robert
 """
 
 import numpy as np
@@ -18,54 +18,75 @@ Ejemplo para el apartado 1.
 Modifica la figura 3D y/o cambia el color
 https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
 """
-def animate2(t):
+
+######################      APARTADO 1       ############################
+def animate3D(t):
     M = np.array([[np.cos(3*np.pi*t),-np.sin(3*np.pi*t),0],[np.sin(3*np.pi*t),np.cos(3*np.pi*t),0],[0,0,1]])
     
     v=np.array([d,d,0])*t
     
-    ax = plt.axes(xlim=(0,100), ylim=(0,100), projection='3d')
+    ax = plt.axes(xlim=(0,200), ylim=(0,200), projection='3d')
     #ax.view_init(60, 30)
 
-    X,Y,Z = transf1D(x-bx, y-by, z, M=M, v=v)
-    X=X.reshape(xshape)
-    Y=Y.reshape(yshape)
-    Z=Z.reshape(zshape)
-    ax.plot_surface(X, Y, Z, rstride=1, cstride=1,alpha=0.5,
-                    cmap='viridis', edgecolor='none')
+    x,y,z = transf3D(X-bx, Y-by, Z-bz, M=M, v=v)
+    ax.contour(x, y, z, 16, extend3d=True,cmap = plt.cm.get_cmap('jet'))
     return ax,
 
 def init2():
-    return animate2(0),
+    return animate3D(0),
+
+def transf3D(x,y,z,M, v=np.array([0,0,0])):
+    xt = np.zeros(shape=(len(x),len(x)))
+    yt = np.zeros(shape=(len(x),len(x)))
+    zt = np.zeros(shape=(len(x),len(x)))
+    for i in range(len(x)):
+        for j in range(len(x)):
+            q = np.array([x[i][j],y[i][j],z[i][j]])
+            xt[i][j], yt[i][j], zt[i][j] = np.matmul(M, q) + v
+    return xt, yt, zt
+
+
+def diametro3D(x,y,z):
+    d=0
+    xaux=x.reshape(-1)
+    yaux=y.reshape(-1)
+    zaux=z.reshape(-1)
+    for i in range(len(xaux)):
+        for j in range(i+1,len(xaux)):
+            aux=(xaux[i]-xaux[j])*(xaux[i]-xaux[j]) +(yaux[i]-yaux[j])*(yaux[i]-yaux[j]) +(zaux[i]-zaux[j])*(zaux[i]-zaux[j])
+            if (aux>d):
+                d=aux
+    return np.sqrt(d)
+    
 
 fig = plt.figure()
 ax = plt.axes(projection='3d')
 X, Y, Z = axes3d.get_test_data(0.05)
-cset = ax.contour(X, Y, Z, 16, extend3d=True,cmap = plt.cm.get_cmap('viridis'))
+cset = ax.contour(X, Y, Z, 16, extend3d=True,cmap = plt.cm.get_cmap('jet'))
 ax.clabel(cset, fontsize=9, inline=1)
 plt.show()
 
-x=np.asarray(X).reshape(-1)
-y=np.asarray(Y).reshape(-1)
-z=np.asarray(Z).reshape(-1)
-xshape=X.shape
-yshape=Y.shape
-zshape=Z.shape
-d = 100
-bx=np.mean(x)
-by=np.mean(y)
+d = diametro3D(X,Y,Z)
+bx=np.mean(X)
+by=np.mean(Y)
+bz=np.mean(Z)
 
-animate2(np.arange(0.1, 1,0.1)[5])
+animate3D(np.arange(0.1, 1,0.1)[5])
 plt.show()
 
 
 fig = plt.figure(figsize=(6,6))
-ani = animation.FuncAnimation(fig, animate2, frames=np.arange(0,1,0.025), init_func=init2,
+ani = animation.FuncAnimation(fig, animate3D, frames=np.arange(0,1,0.025), init_func=init2,
                               interval=20)
 
-ani.save("p7a.gif", fps = 10)  
+ani.save("p7a.gif", fps = 10)
 
 
-def animate(t):
+
+
+######################      APARTADO 2       ############################
+
+def animate2D(t):
     M = np.array([[np.cos(3*np.pi*t),-np.sin(3*np.pi*t),0],[np.sin(3*np.pi*t),np.cos(3*np.pi*t),0],[0,0,1]])
     
     v=np.array([d,d,0])*t
@@ -73,13 +94,13 @@ def animate(t):
     ax = plt.axes(xlim=(0,400), ylim=(0,400), projection='3d')
     #ax.view_init(60, 30)
 
-    XYZ = transf1D(x0-bx, y0-by, z0, M=M, v=v)
+    XYZ = transf2D(x0-bx, y0-by, z0, M=M, v=v)
     col = plt.get_cmap("viridis")(np.array(0.1+XYZ[2]))
     ax.scatter(XYZ[0],XYZ[1],c=col,s=0.1,animated=True)
     return ax,
 
 def init():
-    return animate(0),
+    return animate2D(0),
 
 """
 Transformación para el segundo apartado
@@ -88,7 +109,7 @@ NOTA: Para el primer aparado es necesario adaptar la función o crear otra simil
 pero teniendo en cuenta más dimensiones
 """
 
-def transf1D(x,y,z,M, v=np.array([0,0,0])):
+def transf2D(x,y,z,M, v=np.array([0,0,0])):
     xt = np.empty(len(x))
     yt = np.empty(len(x))
     zt = np.empty(len(x))
@@ -97,7 +118,14 @@ def transf1D(x,y,z,M, v=np.array([0,0,0])):
         xt[i], yt[i], zt[i] = np.matmul(M, q) + v
     return xt, yt, zt
 
-
+def diametro2D(x,y):
+    d=0
+    for i in range(len(x)):
+        for j in range(i+1,len(x)):
+            aux=(x[i]-x[j])*(x[i]-x[j])+(y[i]-y[j])*(y[i]-y[j])
+            if (aux>d):
+                d=aux
+    return np.sqrt(d)
 
 """
 Segundo apartado casi regalado
@@ -148,38 +176,19 @@ ax = fig.add_subplot(1, 2, 2)
 plt.scatter(x0,y0,c=col,s=0.1)
 plt.show()
 
-def diametro(x,y):
-    d=0
-    for i in range(len(x)):
-        for j in range(i+1,len(x)):
-            aux=(x[i]-x[j])**2+(y[i]-y[j])**2
-            if (aux>d):
-                d=aux
-    return np.sqrt(d)
 
-#d = diametro(x0,y0)
+
+d = diametro2D(x0,y0)
 bx=np.mean(x0)
 by=np.mean(y0)
 
-
-
-def init():
-    return animate(0),
-
-animate(np.arange(0.1, 1,0.1)[5])
+print ("El centroide de la imagen, se situa en las coordenadas:(",round(bx,3),round(by,3),")")
+animate2D(np.arange(0.1, 1,0.1)[5])
 plt.show()
 
 
 fig = plt.figure(figsize=(6,6))
-ani = animation.FuncAnimation(fig, animate, frames=np.arange(0,1,0.025), init_func=init,
+ani = animation.FuncAnimation(fig, animate2D, frames=np.arange(0,1,0.025), init_func=init,
                               interval=20)
 
 ani.save("p7b.gif", fps = 10)  
-
-
-
-
-
-
-
-
