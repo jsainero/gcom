@@ -29,7 +29,7 @@ def F(q):
 
 #Resolución de la ecuación dinámica \ddot{q} = F(q), obteniendo la órbita q(t)
 #Los valores iniciales son la posición q0 := q(0) y la derivada dq0 := \dot{q}(0)
-def orb(n,q0,dq0,F, args=None, d=0.001):
+def orb(n,q0,dq0,F, args=None, d=0.001,n0=0):
     #q = [0.0]*(n+1)
     q = np.empty([n+1])
     q[0] = q0
@@ -37,7 +37,7 @@ def orb(n,q0,dq0,F, args=None, d=0.001):
     for i in np.arange(2,n+1):
         args = q[i-2]
         q[i] = - q[i-2] + d**2*F(args) + 2*q[i-1]
-    return q #np.array(q),
+    return q[n0:] #np.array(q),
 
 def periodos(q,d,max=True):
     #Si max = True, tomamos las ondas a partir de los máximos/picos
@@ -55,11 +55,29 @@ def periodos(q,d,max=True):
 
 d = 10**(-3.5)
 ## Pintamos el espacio de fases
-def simplectica(q0,dq0,F,col=0,d=10**(-3.5),n = int(16/d),marker='-'): 
-    q = orb(n,q0=q0,dq0=dq0,F=F,d=d)
+def simplectica(q0,dq0,F,col=0,d=10**(-3.5),n = int(16/d),marker='-',n0=0): 
+    q = orb(n,q0=q0,dq0=dq0,F=F,d=d,n0=n0)
     dq = deriv(q,dq0=dq0,d=d)
     p = dq/2
     plt.plot(q, p, marker,c=plt.get_cmap("winter")(col))
+    
+def print_espacio_fasico(n=int(16/d),n0=0):
+    fig = plt.figure(figsize=(8,5))
+    fig.subplots_adjust(hspace=0.4, wspace=0.2)
+    seq_q0 = np.linspace(0.,1.,num=12)
+    seq_dq0 = np.linspace(0.,2.,num=12)
+    for i in range(len(seq_q0)):
+        for j in range(len(seq_dq0)):
+            q0 = seq_q0[i]
+            dq0 = seq_dq0[j]
+            ax = fig.add_subplot(1,1, 1)
+            col = (1+i+j*(len(seq_q0)))/(len(seq_q0)*len(seq_dq0))
+            #ax = fig.add_subplot(len(seq_q0), len(seq_dq0), 1+i+j*(len(seq_q0)))
+            simplectica(q0=q0,dq0=dq0,F=F,col=col,marker='ro',d=d,n=n,n0=n0)
+    ax.set_xlabel("q(t)", fontsize=12)
+    ax.set_ylabel("p(t)", fontsize=12)
+    #fig.savefig('Simplectic.png', dpi=250)
+    plt.show()
 
 #################################################################    
 #  CÁLCULO DE ÓRBITAS
@@ -120,22 +138,7 @@ def apartado1():
     #  ESPACIO FÁSICO
     #################################################################     
     
-    fig = plt.figure(figsize=(8,5))
-    fig.subplots_adjust(hspace=0.4, wspace=0.2)
-    seq_q0 = np.linspace(0.,1.,num=12)
-    seq_dq0 = np.linspace(0.,2.,num=12)
-    for i in range(len(seq_q0)):
-        for j in range(len(seq_dq0)):
-            q0 = seq_q0[i]
-            dq0 = seq_dq0[j]
-            ax = fig.add_subplot(1,1, 1)
-            col = (1+i+j*(len(seq_q0)))/(len(seq_q0)*len(seq_dq0))
-            #ax = fig.add_subplot(len(seq_q0), len(seq_dq0), 1+i+j*(len(seq_q0)))
-            simplectica(q0=q0,dq0=dq0,F=F,col=col,marker='ro',d=d,n = int(16/d))
-    ax.set_xlabel("q(t)", fontsize=12)
-    ax.set_ylabel("p(t)", fontsize=12)
-    #fig.savefig('Simplectic.png', dpi=250)
-    plt.show()
+    print_espacio_fasico()
 
 
 #################################################################    
@@ -210,6 +213,13 @@ def apartado2():
     resta_areas=[abs(areas[i]-areas[10]) for i in range(len(areas)-1)]
     sort_resta_areas=sorted(resta_areas)
     print("El área calculada es:",areas[10],"-",sort_resta_areas[8])
+    
+    ################################################################
+    ################## TEOREMA DE LIOUVILLE ########################
+    ################################################################
+    
+    for i in range(4):
+        print_espacio_fasico((i+1)*200,i*200)
 
 apartado1()
 apartado2()
