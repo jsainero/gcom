@@ -184,4 +184,4 @@ def apartado2():
 
 
 apartado1()
-apartado2()
+#apartado2()
