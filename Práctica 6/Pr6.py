@@ -7,7 +7,6 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.integrate import simps
-from numpy import trapz
 #https://matplotlib.org/3.1.0/tutorials/colors/colormaps.html
 
 os.getcwd()
@@ -64,8 +63,8 @@ def simplectica(q0,dq0,F,col=0,d=10**(-3.5),n = int(16/d),marker='-',n0=0):
 def print_espacio_fasico(n=int(16/d),n0=0):
     fig = plt.figure(figsize=(8,5))
     fig.subplots_adjust(hspace=0.4, wspace=0.2)
-    seq_q0 = np.linspace(0.,1.,num=12)
-    seq_dq0 = np.linspace(0.,2.,num=12)
+    seq_q0 = np.linspace(0.,1.,num=11)
+    seq_dq0 = np.linspace(0.,2.,num=11)
     for i in range(len(seq_q0)):
         for j in range(len(seq_dq0)):
             q0 = seq_q0[i]
@@ -83,62 +82,15 @@ def print_espacio_fasico(n=int(16/d),n0=0):
 #  CÁLCULO DE ÓRBITAS
 ################################################################# 
 def apartado1():
-    print("Apartado 1\n")
+    print("Apartado 1\n")   
     
-    #Ejemplo gráfico del oscilador simple
-    """
-    q0 = 0.
-    dq0 = 1.
-    fig, ax = plt.subplots(figsize=(12,5))
-    plt.ylim(-1.5, 1.5)  
-    plt.rcParams["legend.markerscale"] = 6
-    ax.set_xlabel("t = n $\delta$", fontsize=12)
-    ax.set_ylabel("q(t)", fontsize=12)
-    iseq = np.array([1,1.1,1.5,1.8,3])
-    for i in iseq:
-        d = 10**(-i)
-        n = int(32/d)
-        t = np.arange(n+1)*d
-        q = orb(n,q0=q0,dq0=dq0,F=F,d=d)
-        plt.plot(t, q, 'ro', markersize=0.5/i,label='$\delta$ ='+str(np.around(d,3)),c=plt.get_cmap("winter")(i/np.max(iseq)))
-        ax.legend(loc=3, frameon=False, fontsize=12)
-    #plt.savefig('Time_granularity.png', dpi=250)
-    
-    #Ejemplo de coordenadas canónicas (q, p)
-    #Nos quedamos con el más fino y calculamos la coordenada canónica 'p'
-    
-    q0 = 0.
-    dq0 = 1.
-    d = 10**(-3.5)
-    n = int(32/d)
-    t = np.arange(n+1)*d
-    q = orb(n,q0=q0,dq0=dq0,F=F,d=d)
-    dq = deriv(q,dq0=dq0,d=d)
-    p = dq/2
-    
-    #Ejemplo gráfico de la derivada de q(t)
-    fig, ax = plt.subplots(figsize=(12,5))
-    plt.ylim(-1.5, 1.5)  
-    plt.rcParams["legend.markerscale"] = 6
-    ax.set_xlabel("t = n $\delta$", fontsize=12)
-    ax.set_ylabel("dq(t)", fontsize=12)
-    plt.plot(t, dq, '-')
-    
-    #Ejemplo de diagrama de fases (q, p)
-    fig, ax = plt.subplots(figsize=(5,5))
-    plt.xlim(-1.1, 1.1)  
-    plt.ylim(-1, 1) 
-    plt.rcParams["legend.markerscale"] = 6
-    ax.set_xlabel("q(t)", fontsize=12)
-    ax.set_ylabel("p(t)", fontsize=12)
-    plt.plot(q, p, '-')
-    plt.show()
-    """
     #################################################################    
     #  ESPACIO FÁSICO
     #################################################################     
     
     print_espacio_fasico()
+
+
 
 
 #################################################################    
@@ -153,54 +105,23 @@ def apartado1():
 #d = 10**(-3.5)
 def area_espacio_fasico(d):
     areas=[]
-    for q0 in np.linspace(0.,1.,num=12):
-        for dq0 in np.linspace(0.,2.,num=12):
+    for q0 in np.linspace(0.,1.,num=11):
+        for dq0 in np.linspace(0.,2.,num=11):
             
             n = int(32/d)
             #t = np.arange(n+1)*d
             q = orb(n,q0=q0,dq0=dq0,F=F,d=d)
             dq = deriv(q,dq0=dq0,d=d)
             p = dq/2
-            #fig, ax = plt.subplots(figsize=(12,5))
-            #plt.plot(t, q, '-')
-            
-            #Nos aseguramos que tiene buen aspecto
-            """
-            fig, ax = plt.subplots(figsize=(5,5)) 
-            plt.rcParams["legend.markerscale"] = 6
-            ax.set_xlabel("q(t)", fontsize=12)
-            ax.set_ylabel("p(t)", fontsize=12)
-            plt.plot(q, p, '-')
-            plt.show()
-            """
             #Tomaremos los periodos de la órbita, que definen las ondas
             T, W = periodos(q,d,max=False)
             if len(W)>1:
-                #Nos quedamos con el primer trozo
-                """
-                plt.plot(q[W[0]:W[1]])
-                plt.show()
-                plt.plot(p[W[0]:W[1]])
-                plt.show()
-                plt.plot(q[W[0]:W[1]],p[W[0]:W[1]])
-                plt.show()
-                """
                 
                 #Tomamos la mitad de la "curva cerrada" para integrar más fácilmente
                 mitad = np.arange(W[0],W[0]+np.int((W[1]-W[0])/2),1)
-                """
-                plt.plot(q[mitad],p[mitad])
-                plt.show()
-                """
-                # Regla del trapezoide
-                #area = trapz(p[mitad],q[mitad])
-                #print("area =", 2*area)
                 
                 # Regla de Simpson
                 area = simps(p[mitad],q[mitad])
-                #print("area =", 2*area)
-                #IMPORTANTE: ES EL VALOR MÁXIMO??
-                #IMPORTANTE: Variar d = 10**(-3) más fino para encontrar intervalo de error
                 areas.append([q0,dq0,area])
     sort_areas=sorted(areas,key=lambda x:x[2])
     min_a=sort_areas[0][2]
@@ -208,16 +129,20 @@ def area_espacio_fasico(d):
     return max_a-min_a
 
 def apartado2():
-    iseq=np.linspace(3.01,3.99,num=11)
+    #Definimos distintos valores de d
+    iseq=np.linspace(3.001,3.999,num=11)
+    #Hallamos el área de cada espacio fásico para cada d
     areas=[area_espacio_fasico(10**(-d)) for d in iseq]
+    #Hallamos el valor absoluto de las diferencias de cada área comparada con "la mejor"
     resta_areas=[abs(areas[i]-areas[10]) for i in range(len(areas)-1)]
     sort_resta_areas=sorted(resta_areas)
-    print("El área calculada es:",areas[10],"-",sort_resta_areas[8])
+    #Cogemos el cuantil de orden 0,9
+    print("El área calculada es:",round(areas[10],3),
+          "con un error de", round(abs(areas[10]-sort_resta_areas[8]),3))
     
     ################################################################
     ################## TEOREMA DE LIOUVILLE ########################
     ################################################################
-    
     for i in range(4):
         print_espacio_fasico((i+1)*200,i*200)
 
